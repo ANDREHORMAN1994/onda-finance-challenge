@@ -48,12 +48,14 @@ O fluxo principal da aplicação foi organizado da seguinte forma:
 - React 19
 - TypeScript
 - Vite
-- Tailwind CSS
+- Tailwind CSS + CVA
+- Primitivos de UI no padrão shadcn/ui com Radix UI
 - React Router
 - React Query
 - Zustand
 - React Hook Form
 - Zod
+- Axios
 - Vitest
 - Testing Library
 
@@ -70,9 +72,19 @@ O fluxo principal da aplicação foi organizado da seguinte forma:
 - `React Hook Form` cuida da performance e da integração com inputs.
 - `Zod` centraliza as regras de validação com tipagem consistente.
 
+### UI e composição
+
+- A interface foi organizada com componentes reutilizáveis no padrão `shadcn/ui`, usando `Radix UI`, `CVA`, `clsx` e `tailwind-merge`.
+- Isso reduz repetição de classes, melhora consistência visual e deixa a base mais preparada para crescimento.
+
+### Camada de API mockada
+
+- `Axios` foi usado como cliente HTTP da aplicação.
+- As respostas mockadas passam por um adapter local, o que aproxima a estrutura de um cenário real de integração sem depender de backend.
+
 ### Mock realista
 
-- O login simula autenticação com atraso proposital.
+- O login simula autenticação com atraso proposital via camada de API mockada.
 - O serviço da conta simula leitura e atualização de dados com delay.
 - O saldo é atualizado a partir da mesma fonte persistida usada pelo dashboard e pela transferência.
 
@@ -88,6 +100,7 @@ src/
     login/
     transfer/
   shared/
+    components/
     constants/
     hooks/
     layouts/

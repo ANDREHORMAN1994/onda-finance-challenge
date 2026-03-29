@@ -1,5 +1,13 @@
 import { ArrowUpRight, Wallet } from 'lucide-react';
 
+import { Button } from '@/shared/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
 import { useAccountSnapshot } from '@/shared/hooks/useAccountSnapshot';
 import { formatCurrency, formatTransactionDate } from '@/shared/utils/formatters';
 
@@ -52,94 +60,99 @@ export function DashboardPage() {
 
       <div className='grid gap-4 lg:grid-cols-2'>
         {overviewCards.map(({ title, value, description, icon: Icon }) => (
-          <article
-            key={title}
-            className='rounded-3xl border border-slate-200 bg-white p-6 shadow-sm'
-          >
-            <div className='flex items-center justify-between'>
-              <p className='text-sm font-medium text-slate-500'>{title}</p>
-              <span className='rounded-full bg-sky-100 p-3 text-sky-700'>
-                <Icon className='h-5 w-5' />
-              </span>
-            </div>
+          <Card key={title}>
+            <CardContent className='p-6'>
+              <div className='flex items-center justify-between'>
+                <p className='text-sm font-medium text-slate-500'>{title}</p>
+                <span className='rounded-full bg-sky-100 p-3 text-sky-700'>
+                  <Icon className='h-5 w-5' />
+                </span>
+              </div>
 
-            <p className='mt-6 text-2xl font-semibold text-slate-950'>{value}</p>
-            <p className='mt-2 text-sm leading-6 text-slate-600'>{description}</p>
-          </article>
+              <p className='mt-6 text-2xl font-semibold text-slate-950'>{value}</p>
+              <p className='mt-2 text-sm leading-6 text-slate-600'>{description}</p>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      <section className='rounded-3xl border border-slate-200 bg-white p-6 shadow-sm'>
-        <div className='flex items-center justify-between gap-4'>
-          <div>
-            <h2 className='text-xl font-semibold text-slate-950'>Transações recentes</h2>
-            <p className='mt-2 text-sm leading-6 text-slate-600'>
-              Últimas movimentações registradas na conta.
-            </p>
+      <Card>
+        <CardHeader>
+          <div className='flex items-center justify-between gap-4'>
+            <div>
+              <CardTitle>Transações recentes</CardTitle>
+              <CardDescription className='mt-2'>
+                Últimas movimentações registradas na conta.
+              </CardDescription>
+            </div>
           </div>
-        </div>
+        </CardHeader>
 
-        {isLoading ? (
-          <div className='mt-6 space-y-3'>
-            {Array.from({ length: 3 }).map((_, index) => (
-              <div
-                key={`transaction-skeleton-${index + 1}`}
-                className='rounded-2xl bg-slate-100 px-4 py-5'
-              >
-                <div className='h-4 w-40 rounded-full bg-slate-200' />
-                <div className='mt-3 h-3 w-28 rounded-full bg-slate-200' />
-              </div>
-            ))}
-          </div>
-        ) : null}
-
-        {isError ? (
-          <div className='mt-6 rounded-2xl border border-rose-200 bg-rose-50 p-5'>
-            <p className='text-sm font-medium text-rose-900'>
-              Não foi possível carregar as movimentações da conta.
-            </p>
-            <button
-              className='mt-4 inline-flex items-center justify-center rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-700'
-              onClick={() => void refetch()}
-              type='button'
-            >
-              Tentar novamente
-            </button>
-          </div>
-        ) : null}
-
-        {!isLoading && !isError && accountSnapshot?.transactions.length === 0 ? (
-          <div className='mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5'>
-            <p className='text-sm text-slate-600'>
-              Ainda não há movimentações registradas nesta conta.
-            </p>
-          </div>
-        ) : null}
-
-        {!isLoading && !isError && accountSnapshot?.transactions.length ? (
-          <div className='mt-6 space-y-3'>
-            {accountSnapshot.transactions.map((transaction) => (
-              <article
-                key={transaction.id}
-                className='flex flex-col gap-3 rounded-2xl bg-slate-50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between'
-              >
-                <div>
-                  <p className='font-medium text-slate-900'>{transaction.title}</p>
-                  <p className='mt-1 text-sm text-slate-500'>
-                    {transaction.counterpart} • {formatTransactionDate(transaction.createdAt)}
-                  </p>
-                </div>
-                <span
-                  className={`text-sm font-medium ${getTransactionAmountClassName(transaction.amount)}`}
+        <CardContent>
+          {isLoading ? (
+            <div className='space-y-3'>
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div
+                  key={`transaction-skeleton-${index + 1}`}
+                  className='rounded-2xl bg-slate-100 px-4 py-5'
                 >
-                  {transaction.amount > 0 ? '+ ' : '- '}
-                  {formatCurrency(Math.abs(transaction.amount))}
-                </span>
-              </article>
-            ))}
-          </div>
-        ) : null}
-      </section>
+                  <div className='h-4 w-40 rounded-full bg-slate-200' />
+                  <div className='mt-3 h-3 w-28 rounded-full bg-slate-200' />
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          {isError ? (
+            <div className='rounded-2xl border border-rose-200 bg-rose-50 p-5'>
+              <p className='text-sm font-medium text-rose-900'>
+                Não foi possível carregar as movimentações da conta.
+              </p>
+              <Button
+                className='mt-4'
+                onClick={() => void refetch()}
+                size='sm'
+                type='button'
+                variant='destructive'
+              >
+                Tentar novamente
+              </Button>
+            </div>
+          ) : null}
+
+          {!isLoading && !isError && accountSnapshot?.transactions.length === 0 ? (
+            <div className='rounded-2xl border border-slate-200 bg-slate-50 p-5'>
+              <p className='text-sm text-slate-600'>
+                Ainda não há movimentações registradas nesta conta.
+              </p>
+            </div>
+          ) : null}
+
+          {!isLoading && !isError && accountSnapshot?.transactions.length ? (
+            <div className='space-y-3'>
+              {accountSnapshot.transactions.map((transaction) => (
+                <article
+                  key={transaction.id}
+                  className='flex flex-col gap-3 rounded-2xl bg-slate-50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between'
+                >
+                  <div>
+                    <p className='font-medium text-slate-900'>{transaction.title}</p>
+                    <p className='mt-1 text-sm text-slate-500'>
+                      {transaction.counterpart} • {formatTransactionDate(transaction.createdAt)}
+                    </p>
+                  </div>
+                  <span
+                    className={`text-sm font-medium ${getTransactionAmountClassName(transaction.amount)}`}
+                  >
+                    {transaction.amount > 0 ? '+ ' : '- '}
+                    {formatCurrency(Math.abs(transaction.amount))}
+                  </span>
+                </article>
+              ))}
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
     </section>
   );
 }

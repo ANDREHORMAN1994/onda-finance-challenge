@@ -1,6 +1,7 @@
-import { accountSnapshotSeed } from '@/shared/mocks/account';
-import { accountStorageKey } from '@/shared/constants/storageKeys';
-import { mockApiDelayInMs } from '@/shared/constants/timings';
+import axios from 'axios';
+
+import { apiEndpoints } from '@/shared/constants/apiEndpoints';
+import { apiClient } from '@/shared/lib/apiClient';
 import type { AccountSnapshot, TransferInput } from '@/shared/types/account';
 
 export class AccountServiceError extends Error {
@@ -10,119 +11,49 @@ export class AccountServiceError extends Error {
   }
 }
 
-function cloneAccountSnapshot(snapshot: AccountSnapshot) {
-  return {
-    ...snapshot,
-    transactions: snapshot.transactions.map((transaction) => ({ ...transaction })),
-  };
-}
+function getErrorMessage(error: unknown, fallbackMessage: string) {
+  if (axios.isAxiosError(error)) {
+    const message = error.response?.data?.message;
 
-function wait(delay: number) {
-  return new Promise((resolve) => {
-    globalThis.setTimeout(resolve, delay);
-  });
-}
-
-function roundCurrency(value: number) {
-  return Math.round((value + Number.EPSILON) * 100) / 100;
-}
-
-function parseStoredSnapshot(value: string | null) {
-  if (!value) {
-    return null;
-  }
-
-  try {
-    const parsed = JSON.parse(value) as Partial<AccountSnapshot>;
-
-    if (
-      !parsed.accountName ||
-      typeof parsed.balance !== 'number' ||
-      !Array.isArray(parsed.transactions)
-    ) {
-      return null;
+    if (typeof message === 'string') {
+      return message;
     }
-
-    return parsed as AccountSnapshot;
-  } catch {
-    return null;
-  }
-}
-
-function getStoredSnapshot() {
-  if (typeof window === 'undefined') {
-    return cloneAccountSnapshot(accountSnapshotSeed);
   }
 
-  const existingSnapshot = parseStoredSnapshot(
-    window.localStorage.getItem(accountStorageKey),
-  );
-
-  if (existingSnapshot) {
-    return existingSnapshot;
-  }
-
-  const seededSnapshot = cloneAccountSnapshot(accountSnapshotSeed);
-
-  window.localStorage.setItem(
-    accountStorageKey,
-    JSON.stringify(seededSnapshot),
-  );
-
-  return seededSnapshot;
-}
-
-function saveAccountSnapshot(snapshot: AccountSnapshot) {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  window.localStorage.setItem(accountStorageKey, JSON.stringify(snapshot));
+  return fallbackMessage;
 }
 
 export async function getAccountSnapshot() {
-  await wait(mockApiDelayInMs);
+  try {
+    const { data } = await apiClient.get<AccountSnapshot>(
+      apiEndpoints.account.snapshot,
+    );
 
-  return cloneAccountSnapshot(getStoredSnapshot());
+    return data;
+  } catch (error) {
+    throw new AccountServiceError(
+      getErrorMessage(error, 'Não foi possível carregar os dados da conta.'),
+    );
+  }
 }
 
 export async function transferFunds({ amount, recipient }: TransferInput) {
-  await wait(mockApiDelayInMs);
-
-  const normalizedRecipient = recipient.trim();
-  const normalizedAmount = roundCurrency(amount);
-
-  if (!normalizedRecipient) {
-    throw new AccountServiceError('Informe o destinatário da transferência.');
-  }
-
-  if (normalizedAmount <= 0) {
-    throw new AccountServiceError('Informe um valor maior que zero.');
-  }
-
-  const currentSnapshot = getStoredSnapshot();
-
-  if (normalizedAmount > currentSnapshot.balance) {
-    throw new AccountServiceError('Saldo insuficiente para concluir a transferência.');
-  }
-
-  const updatedSnapshot = {
-    ...currentSnapshot,
-    balance: roundCurrency(currentSnapshot.balance - normalizedAmount),
-    transactions: [
+  try {
+    const { data } = await apiClient.post<AccountSnapshot>(
+      apiEndpoints.account.transfer,
       {
-        id: `txn-${Date.now()}`,
-        title: 'Transferência enviada',
-        counterpart: normalizedRecipient,
-        amount: -normalizedAmount,
-        type: 'transfer_sent' as const,
-        createdAt: new Date().toISOString(),
+        amount,
+        recipient,
       },
-      ...currentSnapshot.transactions,
-    ],
-  } satisfies AccountSnapshot;
+    );
 
-  saveAccountSnapshot(updatedSnapshot);
-
-  return cloneAccountSnapshot(updatedSnapshot);
+    return data;
+  } catch (error) {
+    throw new AccountServiceError(
+      getErrorMessage(
+        error,
+        'Não foi possível concluir a transferência agora.',
+      ),
+    );
+  }
 }

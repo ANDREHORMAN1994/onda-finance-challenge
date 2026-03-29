@@ -1,8 +1,4 @@
-import {
-  defaultUserEmail,
-  defaultUserName,
-  legacySessionUserName,
-} from '@/shared/constants/app';
+import { defaultUserName } from '@/shared/constants/app';
 import { sessionStorageKey } from '@/shared/constants/storageKeys';
 
 export type SessionUser = {
@@ -30,16 +26,6 @@ function getNameFromEmail(email: string) {
 function parseSession(value: string | null) {
   if (!value) {
     return null;
-  }
-
-  if (value === 'authenticated') {
-    return {
-      isAuthenticated: true,
-      user: {
-        email: defaultUserEmail,
-        name: legacySessionUserName,
-      },
-    } satisfies SessionData;
   }
 
   try {

@@ -6,7 +6,18 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { loginSchema, type LoginFormData } from '@/pages/login/schema';
 import { appBrandName } from '@/shared/constants/app';
 import { appRoutes } from '@/shared/constants/routes';
-import { mockLoginDelayInMs } from '@/shared/constants/timings';
+import { Alert } from '@/shared/components/ui/alert';
+import { Button } from '@/shared/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
+import { Input } from '@/shared/components/ui/input';
+import { Label } from '@/shared/components/ui/label';
+import { authenticateUser } from '@/shared/services/authService';
 import { useAuthStore } from '@/shared/stores/useAuthStore';
 
 export function LoginPage() {
@@ -14,9 +25,11 @@ export function LoginPage() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const login = useAuthStore((state) => state.login);
   const {
+    clearErrors,
     formState: { errors, isSubmitting },
     handleSubmit,
     register,
+    setError,
   } = useForm<LoginFormData>({
     defaultValues: {
       email: '',
@@ -30,12 +43,22 @@ export function LoginPage() {
   }
 
   const onSubmit = async (data: LoginFormData) => {
-    await new Promise((resolve) => {
-      window.setTimeout(resolve, mockLoginDelayInMs);
-    });
+    clearErrors('root');
 
-    login(data.email);
-    navigate(appRoutes.dashboard, { replace: true });
+    try {
+      const authenticatedUser = await authenticateUser(data);
+
+      login(authenticatedUser.email);
+      navigate(appRoutes.dashboard, { replace: true });
+    } catch (error) {
+      setError('root', {
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Não foi possível autenticar a conta agora.',
+        type: 'server',
+      });
+    }
   };
 
   return (
@@ -57,65 +80,66 @@ export function LoginPage() {
             </div>
           </article>
 
-          <article className='rounded-3xl bg-white p-8 text-slate-950 shadow-xl'>
-            <div className='flex items-center gap-3'>
-              <span className='inline-flex h-12 w-12 items-center justify-center rounded-xl bg-sky-100 text-sky-700'>
-                <LockKeyhole className='h-6 w-6' />
-              </span>
-              <h2 className='text-2xl font-semibold text-slate-950'>Acesso à conta</h2>
-            </div>
-
-            <p className='mt-6 text-sm leading-6 text-slate-600'>
-              Entre para consultar sua movimentação, acompanhar o saldo da conta e iniciar novas
-              transferências.
-            </p>
-
-            <form className='mt-8' onSubmit={handleSubmit(onSubmit)}>
-              <div className='space-y-4'>
-                <div>
-                  <label className='text-sm font-medium text-slate-500' htmlFor='email'>
-                    E-mail
-                  </label>
-                  <input
-                    autoComplete='email'
-                    className='mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500'
-                    id='email'
-                    placeholder='seuemail@onda.finance'
-                    type='email'
-                    {...register('email')}
-                  />
-                  {errors.email ? (
-                    <p className='mt-2 text-sm text-rose-600'>{errors.email.message}</p>
-                  ) : null}
-                </div>
-
-                <div>
-                  <label className='text-sm font-medium text-slate-500' htmlFor='password'>
-                    Senha
-                  </label>
-                  <input
-                    autoComplete='current-password'
-                    className='mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500'
-                    id='password'
-                    placeholder='Digite sua senha'
-                    type='password'
-                    {...register('password')}
-                  />
-                  {errors.password ? (
-                    <p className='mt-2 text-sm text-rose-600'>{errors.password.message}</p>
-                  ) : null}
-                </div>
+          <Card className='border-white/20 bg-white text-slate-950 shadow-xl'>
+            <CardHeader>
+              <div className='flex items-center gap-3'>
+                <span className='inline-flex h-12 w-12 items-center justify-center rounded-xl bg-sky-100 text-sky-700'>
+                  <LockKeyhole className='h-6 w-6' />
+                </span>
+                <CardTitle className='text-2xl'>Acesso à conta</CardTitle>
               </div>
+              <CardDescription className='pt-4'>
+                Entre para consultar sua movimentação, acompanhar o saldo da conta e iniciar novas
+                transferências.
+              </CardDescription>
+            </CardHeader>
 
-              <button
-                className='mt-6 inline-flex w-full items-center justify-center rounded-xl bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400'
-                disabled={isSubmitting}
-                type='submit'
-              >
-                {isSubmitting ? 'Entrando...' : 'Continuar'}
-              </button>
-            </form>
-          </article>
+            <CardContent>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <div className='space-y-4'>
+                  <div>
+                    <Label htmlFor='email'>E-mail</Label>
+                    <Input
+                      autoComplete='email'
+                      className='mt-2'
+                      id='email'
+                      placeholder='seuemail@onda.finance'
+                      type='email'
+                      {...register('email')}
+                    />
+                    {errors.email ? (
+                      <p className='mt-2 text-sm text-rose-600'>{errors.email.message}</p>
+                    ) : null}
+                  </div>
+
+                  <div>
+                    <Label htmlFor='password'>Senha</Label>
+                    <Input
+                      autoComplete='current-password'
+                      className='mt-2'
+                      id='password'
+                      placeholder='Digite sua senha'
+                      type='password'
+                      {...register('password')}
+                    />
+                    {errors.password ? (
+                      <p className='mt-2 text-sm text-rose-600'>{errors.password.message}</p>
+                    ) : null}
+                  </div>
+                </div>
+
+                {errors.root ? (
+                  <Alert className='mt-6' variant='destructive'>
+                    {errors.root.message}
+                  </Alert>
+                ) : null}
+
+                <Button className='mt-6 w-full' disabled={isSubmitting} type='submit'>
+                  {isSubmitting ? 'Entrando...' : 'Continuar'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
         </section>
       </div>
     </main>

@@ -7,6 +7,7 @@ import {
   defaultUserEmail,
   defaultUserName,
 } from '@/shared/constants/app';
+import { Button } from '@/shared/components/ui/button';
 import { navigationItems } from '@/shared/constants/navigation';
 import { appRoutes } from '@/shared/constants/routes';
 import { useAuthStore } from '@/shared/stores/useAuthStore';
@@ -65,14 +66,16 @@ export function AppShell() {
               </p>
             </div>
 
-            <button
-              className='inline-flex shrink-0 items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100'
+            <Button
+              className='shrink-0'
               onClick={handleLogout}
+              size='sm'
               type='button'
+              variant='outline'
             >
               <LogOut className='h-4 w-4' />
               Sair
-            </button>
+            </Button>
           </div>
         </div>
       </header>

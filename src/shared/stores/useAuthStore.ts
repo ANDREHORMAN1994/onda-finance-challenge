@@ -12,7 +12,6 @@ type AuthStore = {
   user: SessionUser | null;
   login: (email: string) => void;
   logout: () => void;
-  syncSession: () => void;
 };
 
 const initialSession = getSession();
@@ -34,14 +33,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
     set({
       isAuthenticated: false,
       user: null,
-    });
-  },
-  syncSession: () => {
-    const session = getSession();
-
-    set({
-      isAuthenticated: session?.isAuthenticated ?? false,
-      user: session?.user ?? null,
     });
   },
 }));
