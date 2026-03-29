@@ -1,7 +1,7 @@
 import { Navigate, RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 import { ProtectedRoute } from '@/app/router/protected-route';
-import { DashboardPage } from '@/features/account/pages/dashboard-page';
+import { DashboardPage } from '@/features/dashboard';
 import { LoginPage } from '@/features/auth/pages/login-page';
 import { TransferPage } from '@/features/transfer/pages/transfer-page';
 import { AppShell } from '@/shared/layouts/app-shell';
