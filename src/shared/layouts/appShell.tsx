@@ -1,20 +1,15 @@
-import { ArrowRightLeft, Landmark, LayoutGrid, LogOut } from 'lucide-react';
+import { Landmark, LogOut } from 'lucide-react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 
+import {
+  appBrandName,
+  appProductLabel,
+  defaultUserEmail,
+  defaultUserName,
+} from '@/shared/constants/app';
+import { navigationItems } from '@/shared/constants/navigation';
+import { appRoutes } from '@/shared/constants/routes';
 import { useAuthStore } from '@/shared/stores/useAuthStore';
-
-const navigationItems = [
-  {
-    label: 'Dashboard',
-    to: '/dashboard',
-    icon: LayoutGrid,
-  },
-  {
-    label: 'Transferência',
-    to: '/transfer',
-    icon: ArrowRightLeft,
-  },
-];
 
 function getNavItemClassName(isActive: boolean) {
   if (isActive) {
@@ -31,7 +26,7 @@ export function AppShell() {
 
   const handleLogout = () => {
     logout();
-    navigate('/login', { replace: true });
+    navigate(appRoutes.login, { replace: true });
   };
 
   return (
@@ -45,9 +40,9 @@ export function AppShell() {
 
             <div>
               <p className='text-sm font-semibold uppercase tracking-wide text-sky-700'>
-                Onda Finance
+                {appBrandName}
               </p>
-              <p className='text-sm text-slate-500'>Conta digital</p>
+              <p className='text-sm text-slate-500'>{appProductLabel}</p>
             </div>
           </div>
 
@@ -62,8 +57,12 @@ export function AppShell() {
 
           <div className='flex items-center gap-3'>
             <div className='text-right'>
-              <p className='text-sm font-medium text-slate-900'>{user?.name ?? 'Conta Onda'}</p>
-              <p className='text-xs text-slate-500'>{user?.email ?? 'demo@onda.finance'}</p>
+              <p className='text-sm font-medium text-slate-900'>
+                {user?.name ?? defaultUserName}
+              </p>
+              <p className='text-xs text-slate-500'>
+                {user?.email ?? defaultUserEmail}
+              </p>
             </div>
 
             <button

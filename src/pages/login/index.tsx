@@ -4,6 +4,9 @@ import { useForm } from 'react-hook-form';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 import { loginSchema, type LoginFormData } from '@/pages/login/schema';
+import { appBrandName } from '@/shared/constants/app';
+import { appRoutes } from '@/shared/constants/routes';
+import { mockLoginDelayInMs } from '@/shared/constants/timings';
 import { useAuthStore } from '@/shared/stores/useAuthStore';
 
 export function LoginPage() {
@@ -23,16 +26,16 @@ export function LoginPage() {
   });
 
   if (isAuthenticated) {
-    return <Navigate replace to='/dashboard' />;
+    return <Navigate replace to={appRoutes.dashboard} />;
   }
 
   const onSubmit = async (data: LoginFormData) => {
     await new Promise((resolve) => {
-      window.setTimeout(resolve, 600);
+      window.setTimeout(resolve, mockLoginDelayInMs);
     });
 
     login(data.email);
-    navigate('/dashboard', { replace: true });
+    navigate(appRoutes.dashboard, { replace: true });
   };
 
   return (
@@ -42,7 +45,7 @@ export function LoginPage() {
           <article className='flex flex-col justify-center space-y-6'>
             <div className='space-y-4'>
               <p className='text-sm font-semibold uppercase tracking-wide text-sky-300'>
-                Onda Finance
+                {appBrandName}
               </p>
               <h1 className='text-3xl font-semibold tracking-tight text-white'>
                 Sua conta digital em um único lugar.

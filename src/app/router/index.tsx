@@ -4,20 +4,26 @@ import { ProtectedRoute } from '@/app/router/protectedRoute';
 import { DashboardPage } from '@/pages/dashboard';
 import { LoginPage } from '@/pages/login';
 import { TransferPage } from '@/pages/transfer';
+import { appRoutes } from '@/shared/constants/routes';
 import { AppShell } from '@/shared/layouts/appShell';
 import { hasActiveSession } from '@/shared/utils/session';
 
 function RootRedirect() {
-  return <Navigate replace to={hasActiveSession() ? '/dashboard' : '/login'} />;
+  return (
+    <Navigate
+      replace
+      to={hasActiveSession() ? appRoutes.dashboard : appRoutes.login}
+    />
+  );
 }
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: appRoutes.root,
     element: <RootRedirect />,
   },
   {
-    path: '/login',
+    path: appRoutes.login,
     element: <LoginPage />,
   },
   {
@@ -27,11 +33,11 @@ const router = createBrowserRouter([
         element: <AppShell />,
         children: [
           {
-            path: '/dashboard',
+            path: appRoutes.dashboard,
             element: <DashboardPage />,
           },
           {
-            path: '/transfer',
+            path: appRoutes.transfer,
             element: <TransferPage />,
           },
         ],
@@ -39,8 +45,8 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: '*',
-    element: <Navigate replace to='/' />,
+    path: appRoutes.notFound,
+    element: <Navigate replace to={appRoutes.root} />,
   },
 ]);
 

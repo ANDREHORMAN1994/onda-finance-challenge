@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { TransferPage } from '@/pages/transfer';
-import { accountStorageKey } from '@/shared/services/accountService';
+import { accountStorageKey } from '@/shared/constants/storageKeys';
 import { formatCurrency } from '@/shared/utils/formatters';
 
 function createTestQueryClient() {

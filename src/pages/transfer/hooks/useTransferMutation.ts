@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { accountSnapshotQueryKey } from '@/shared/constants/queryKeys';
 import { transferFunds } from '@/shared/services/accountService';
-import { accountSnapshotQueryKey } from '@/shared/hooks/useAccountSnapshot';
 
 export function useTransferMutation() {
   const queryClient = useQueryClient();

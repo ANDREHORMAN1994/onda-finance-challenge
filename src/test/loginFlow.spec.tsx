@@ -6,22 +6,23 @@ import {
 } from 'react-router-dom';
 
 import { LoginPage } from '@/pages/login';
-import { sessionStorageKey } from '@/shared/utils/session';
+import { appRoutes } from '@/shared/constants/routes';
+import { sessionStorageKey } from '@/shared/constants/storageKeys';
 
 function renderLoginPage() {
   const router = createMemoryRouter(
     [
       {
-        path: '/login',
+        path: appRoutes.login,
         element: <LoginPage />,
       },
       {
-        path: '/dashboard',
+        path: appRoutes.dashboard,
         element: <div>Dashboard carregado</div>,
       },
     ],
     {
-      initialEntries: ['/login'],
+      initialEntries: [appRoutes.login],
     },
   );
 

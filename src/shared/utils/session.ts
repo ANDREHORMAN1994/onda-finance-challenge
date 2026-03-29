@@ -1,4 +1,9 @@
-export const sessionStorageKey = 'onda-finance:session';
+import {
+  defaultUserEmail,
+  defaultUserName,
+  legacySessionUserName,
+} from '@/shared/constants/app';
+import { sessionStorageKey } from '@/shared/constants/storageKeys';
 
 export type SessionUser = {
   email: string;
@@ -19,7 +24,7 @@ function getNameFromEmail(email: string) {
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
 
-  return displayName || 'Conta Onda';
+  return displayName || defaultUserName;
 }
 
 function parseSession(value: string | null) {
@@ -31,8 +36,8 @@ function parseSession(value: string | null) {
     return {
       isAuthenticated: true,
       user: {
-        email: 'demo@onda.finance',
-        name: 'Conta Demo',
+        email: defaultUserEmail,
+        name: legacySessionUserName,
       },
     } satisfies SessionData;
   }

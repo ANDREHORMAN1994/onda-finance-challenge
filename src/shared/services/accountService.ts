@@ -1,8 +1,7 @@
 import { accountSnapshotSeed } from '@/shared/mocks/account';
+import { accountStorageKey } from '@/shared/constants/storageKeys';
+import { mockApiDelayInMs } from '@/shared/constants/timings';
 import type { AccountSnapshot, TransferInput } from '@/shared/types/account';
-
-export const accountStorageKey = 'onda-finance:account';
-const requestDelayInMs = 700;
 
 export class AccountServiceError extends Error {
   constructor(message: string) {
@@ -82,13 +81,13 @@ function saveAccountSnapshot(snapshot: AccountSnapshot) {
 }
 
 export async function getAccountSnapshot() {
-  await wait(requestDelayInMs);
+  await wait(mockApiDelayInMs);
 
   return cloneAccountSnapshot(getStoredSnapshot());
 }
 
 export async function transferFunds({ amount, recipient }: TransferInput) {
-  await wait(requestDelayInMs);
+  await wait(mockApiDelayInMs);
 
   const normalizedRecipient = recipient.trim();
   const normalizedAmount = roundCurrency(amount);
