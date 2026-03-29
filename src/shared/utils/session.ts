@@ -7,3 +7,11 @@ export function hasActiveSession() {
 
   return window.localStorage.getItem(sessionStorageKey) === 'authenticated';
 }
+
+export function createSession() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.localStorage.setItem(sessionStorageKey, 'authenticated');
+}

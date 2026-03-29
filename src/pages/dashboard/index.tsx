@@ -3,35 +3,40 @@ import { Link } from 'react-router-dom';
 
 const overviewCards = [
   {
-    title: 'Saldo disponivel',
-    value: 'R$ 0,00',
-    description: 'Conectaremos o saldo mockado no proximo commit.',
+    title: 'Saldo disponível',
+    value: 'R$ 12.480,90',
+    description: 'Valor disponível para movimentação imediata.',
     icon: Wallet,
   },
   {
-    title: 'Ultima transferencia',
-    value: 'Sem historico',
-    description: 'A mutation de transferencia entra na proxima etapa.',
+    title: 'Última transferência',
+    value: 'R$ 850,00',
+    description: 'Enviada para Mariana Souza hoje às 09:42.',
     icon: ArrowUpRight,
   },
   {
     title: 'Conta principal',
     value: 'Onda Digital',
-    description: 'Area protegida pronta para receber dados reais.',
+    description: 'Conta corrente individual em reais.',
     icon: Landmark,
   },
 ];
 
 const recentTransactions = [
   {
-    title: 'Estrutura inicial pronta',
-    subtitle: 'Router, providers e paginas base',
-    amount: 'Infra',
+    title: 'Transferência enviada',
+    subtitle: 'Mariana Souza',
+    amount: '- R$ 850,00',
   },
   {
-    title: 'Autenticacao mock',
-    subtitle: 'Entra no commit seguinte',
-    amount: 'Proximo',
+    title: 'Pix recebido',
+    subtitle: 'Carlos Eduardo',
+    amount: '+ R$ 1.200,00',
+  },
+  {
+    title: 'Pagamento de boleto',
+    subtitle: 'Energia residencial',
+    amount: '- R$ 214,37',
   },
 ];
 
@@ -44,11 +49,11 @@ export function DashboardPage() {
             Dashboard
           </p>
           <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
-            Painel base pronto para receber saldo e extrato.
+            Resumo da sua conta.
           </h1>
           <p className="max-w-2xl text-base leading-7 text-slate-600">
-            Neste commit a rota protegida, o layout e os placeholders ficaram
-            organizados. No proximo, conectamos o estado da conta.
+            Visualize o saldo atual, acompanhe suas movimentações recentes e
+            acesse rapidamente a área de transferências.
           </p>
         </div>
 
@@ -56,7 +61,7 @@ export function DashboardPage() {
           to="/transfer"
           className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
         >
-          Ir para transferencia
+          Ir para transferência
           <ArrowRight className="h-4 w-4" />
         </Link>
       </header>
@@ -88,10 +93,10 @@ export function DashboardPage() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold text-slate-950">
-              Transacoes recentes
+              Transações recentes
             </h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              A lista abaixo e apenas um marcador para a estrutura da tela.
+              Últimas movimentações registradas na conta.
             </p>
           </div>
         </div>

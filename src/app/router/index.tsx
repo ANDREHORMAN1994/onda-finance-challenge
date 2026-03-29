@@ -5,12 +5,10 @@ import { DashboardPage } from '@/pages/dashboard';
 import { LoginPage } from '@/pages/login';
 import { TransferPage } from '@/pages/transfer';
 import { AppShell } from '@/shared/layouts/app-shell';
-import { hasActiveSession } from '@/shared/lib/session';
+import { hasActiveSession } from '@/shared/utils/session';
 
 function RootRedirect() {
-  return (
-    <Navigate replace to={hasActiveSession() ? '/dashboard' : '/login'} />
-  );
+  return <Navigate replace to={hasActiveSession() ? '/dashboard' : '/login'} />;
 }
 
 const router = createBrowserRouter([
@@ -42,7 +40,7 @@ const router = createBrowserRouter([
   },
   {
     path: '*',
-    element: <Navigate replace to="/" />,
+    element: <Navigate replace to='/' />,
   },
 ]);
 

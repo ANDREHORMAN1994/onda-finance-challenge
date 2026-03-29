@@ -8,7 +8,7 @@ const navigationItems = [
     icon: LayoutGrid,
   },
   {
-    label: 'Transferencia',
+    label: 'Transferência',
     to: '/transfer',
     icon: ArrowRightLeft,
   },
@@ -37,7 +37,7 @@ export function AppShell() {
                 Onda Finance
               </p>
               <p className="text-sm text-slate-500">
-                Mini banco digital em construcao
+                Conta digital
               </p>
             </div>
           </div>
