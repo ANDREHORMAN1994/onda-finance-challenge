@@ -1,10 +1,10 @@
 import { Navigate, RouterProvider, createBrowserRouter } from 'react-router-dom';
 
-import { ProtectedRoute } from '@/app/router/protected-route';
+import { ProtectedRoute } from '@/app/router/protectedRoute';
 import { DashboardPage } from '@/pages/dashboard';
 import { LoginPage } from '@/pages/login';
 import { TransferPage } from '@/pages/transfer';
-import { AppShell } from '@/shared/layouts/app-shell';
+import { AppShell } from '@/shared/layouts/appShell';
 import { hasActiveSession } from '@/shared/utils/session';
 
 function RootRedirect() {

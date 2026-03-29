@@ -1,46 +1,52 @@
 import { ArrowRight, ArrowUpRight, Landmark, Wallet } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const overviewCards = [
-  {
-    title: 'Saldo disponível',
-    value: 'R$ 12.480,90',
-    description: 'Valor disponível para movimentação imediata.',
-    icon: Wallet,
-  },
-  {
-    title: 'Última transferência',
-    value: 'R$ 850,00',
-    description: 'Enviada para Mariana Souza hoje às 09:42.',
-    icon: ArrowUpRight,
-  },
-  {
-    title: 'Conta principal',
-    value: 'Onda Digital',
-    description: 'Conta corrente individual em reais.',
-    icon: Landmark,
-  },
-];
+import { useDashboardData } from '@/pages/dashboard/hooks/useDashboardData';
+import { formatCurrency, formatTransactionDate } from '@/shared/utils/formatters';
 
-const recentTransactions = [
-  {
-    title: 'Transferência enviada',
-    subtitle: 'Mariana Souza',
-    amount: '- R$ 850,00',
-  },
-  {
-    title: 'Pix recebido',
-    subtitle: 'Carlos Eduardo',
-    amount: '+ R$ 1.200,00',
-  },
-  {
-    title: 'Pagamento de boleto',
-    subtitle: 'Energia residencial',
-    amount: '- R$ 214,37',
-  },
-];
+function getTransactionAmountClassName(amount: number) {
+  if (amount < 0) {
+    return 'text-rose-600';
+  }
+
+  return 'text-emerald-600';
+}
 
 export function DashboardPage() {
+  const {
+    data: accountSnapshot,
+    isError,
+    isLoading,
+    refetch,
+  } = useDashboardData();
+
+  const lastTransfer = accountSnapshot?.transactions.find(
+    (transaction) => transaction.type === 'transfer_sent',
+  );
+
+  const overviewCards = [
+    {
+      title: 'Saldo disponível',
+      value: accountSnapshot ? formatCurrency(accountSnapshot.balance) : '--',
+      description: 'Valor disponível para movimentação imediata.',
+      icon: Wallet,
+    },
+    {
+      title: 'Última transferência',
+      value: lastTransfer ? formatCurrency(Math.abs(lastTransfer.amount)) : '--',
+      description: lastTransfer
+        ? `${lastTransfer.counterpart} • ${formatTransactionDate(lastTransfer.createdAt)}`
+        : 'Nenhuma transferência recente encontrada.',
+      icon: ArrowUpRight,
+    },
+    {
+      title: 'Conta principal',
+      value: accountSnapshot?.accountName ?? '--',
+      description: 'Conta corrente individual em reais.',
+      icon: Landmark,
+    },
+  ];
+
   return (
     <section className="space-y-8">
       <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -101,26 +107,68 @@ export function DashboardPage() {
           </div>
         </div>
 
-        <div className="mt-6 space-y-3">
-          {recentTransactions.map((transaction) => (
-            <article
-              key={transaction.title}
-              className="flex flex-col gap-3 rounded-2xl bg-slate-50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div>
-                <p className="font-medium text-slate-900">
-                  {transaction.title}
-                </p>
-                <p className="mt-1 text-sm text-slate-500">
-                  {transaction.subtitle}
-                </p>
+        {isLoading ? (
+          <div className="mt-6 space-y-3">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={`transaction-skeleton-${index + 1}`}
+                className="rounded-2xl bg-slate-100 px-4 py-5"
+              >
+                <div className="h-4 w-40 rounded-full bg-slate-200" />
+                <div className="mt-3 h-3 w-28 rounded-full bg-slate-200" />
               </div>
-              <span className="text-sm font-medium text-sky-700">
-                {transaction.amount}
-              </span>
-            </article>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : null}
+
+        {isError ? (
+          <div className="mt-6 rounded-2xl border border-rose-200 bg-rose-50 p-5">
+            <p className="text-sm font-medium text-rose-900">
+              Não foi possível carregar as movimentações da conta.
+            </p>
+            <button
+              className="mt-4 inline-flex items-center justify-center rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-700"
+              onClick={() => void refetch()}
+              type="button"
+            >
+              Tentar novamente
+            </button>
+          </div>
+        ) : null}
+
+        {!isLoading && !isError && accountSnapshot?.transactions.length === 0 ? (
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <p className="text-sm text-slate-600">
+              Ainda não há movimentações registradas nesta conta.
+            </p>
+          </div>
+        ) : null}
+
+        {!isLoading && !isError && accountSnapshot?.transactions.length ? (
+          <div className="mt-6 space-y-3">
+            {accountSnapshot.transactions.map((transaction) => (
+              <article
+                key={transaction.id}
+                className="flex flex-col gap-3 rounded-2xl bg-slate-50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <p className="font-medium text-slate-900">
+                    {transaction.title}
+                  </p>
+                  <p className="mt-1 text-sm text-slate-500">
+                    {transaction.counterpart} • {formatTransactionDate(transaction.createdAt)}
+                  </p>
+                </div>
+                <span
+                  className={`text-sm font-medium ${getTransactionAmountClassName(transaction.amount)}`}
+                >
+                  {transaction.amount > 0 ? '+ ' : '- '}
+                  {formatCurrency(Math.abs(transaction.amount))}
+                </span>
+              </article>
+            ))}
+          </div>
+        ) : null}
       </section>
     </section>
   );

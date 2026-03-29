@@ -1,7 +1,7 @@
 import { ArrowRightLeft, Landmark, LayoutGrid, LogOut } from 'lucide-react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 
-import { useAuthStore } from '@/shared/stores/use-auth-store';
+import { useAuthStore } from '@/shared/stores/useAuthStore';
 
 const navigationItems = [
   {

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 import { loginSchema, type LoginFormData } from '@/pages/login/schema';
-import { useAuthStore } from '@/shared/stores/use-auth-store';
+import { useAuthStore } from '@/shared/stores/useAuthStore';
 
 export function LoginPage() {
   const navigate = useNavigate();
