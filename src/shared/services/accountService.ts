@@ -1,7 +1,7 @@
 import { accountSnapshotSeed } from '@/shared/mocks/account';
 import type { AccountSnapshot, TransferInput } from '@/shared/types/account';
 
-const accountStorageKey = 'onda-finance:account';
+export const accountStorageKey = 'onda-finance:account';
 const requestDelayInMs = 700;
 
 export class AccountServiceError extends Error {
