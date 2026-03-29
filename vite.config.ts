@@ -12,6 +12,18 @@ export default defineConfig({
     },
   },
   test: {
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      reportsDirectory: './coverage',
+      exclude: [
+        'src/test/**',
+        'src/main.tsx',
+        'src/App.tsx',
+        'src/shared/constants/**',
+        'src/shared/types/**',
+      ],
+    },
     css: true,
     environment: 'jsdom',
     globals: true,
