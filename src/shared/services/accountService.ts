@@ -1,8 +1,15 @@
 import { accountSnapshotSeed } from '@/shared/mocks/account';
-import type { AccountSnapshot } from '@/shared/types/account';
+import type { AccountSnapshot, TransferInput } from '@/shared/types/account';
 
 const accountStorageKey = 'onda-finance:account';
 const requestDelayInMs = 700;
+
+export class AccountServiceError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'AccountServiceError';
+  }
+}
 
 function cloneAccountSnapshot(snapshot: AccountSnapshot) {
   return {
@@ -13,8 +20,12 @@ function cloneAccountSnapshot(snapshot: AccountSnapshot) {
 
 function wait(delay: number) {
   return new Promise((resolve) => {
-    window.setTimeout(resolve, delay);
+    globalThis.setTimeout(resolve, delay);
   });
+}
+
+function roundCurrency(value: number) {
+  return Math.round((value + Number.EPSILON) * 100) / 100;
 }
 
 function parseStoredSnapshot(value: string | null) {
@@ -62,8 +73,57 @@ function getStoredSnapshot() {
   return seededSnapshot;
 }
 
+function saveAccountSnapshot(snapshot: AccountSnapshot) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.localStorage.setItem(accountStorageKey, JSON.stringify(snapshot));
+}
+
 export async function getAccountSnapshot() {
   await wait(requestDelayInMs);
 
   return cloneAccountSnapshot(getStoredSnapshot());
+}
+
+export async function transferFunds({ amount, recipient }: TransferInput) {
+  await wait(requestDelayInMs);
+
+  const normalizedRecipient = recipient.trim();
+  const normalizedAmount = roundCurrency(amount);
+
+  if (!normalizedRecipient) {
+    throw new AccountServiceError('Informe o destinatário da transferência.');
+  }
+
+  if (normalizedAmount <= 0) {
+    throw new AccountServiceError('Informe um valor maior que zero.');
+  }
+
+  const currentSnapshot = getStoredSnapshot();
+
+  if (normalizedAmount > currentSnapshot.balance) {
+    throw new AccountServiceError('Saldo insuficiente para concluir a transferência.');
+  }
+
+  const updatedSnapshot = {
+    ...currentSnapshot,
+    balance: roundCurrency(currentSnapshot.balance - normalizedAmount),
+    transactions: [
+      {
+        id: `txn-${Date.now()}`,
+        title: 'Transferência enviada',
+        counterpart: normalizedRecipient,
+        amount: -normalizedAmount,
+        type: 'transfer_sent' as const,
+        createdAt: new Date().toISOString(),
+      },
+      ...currentSnapshot.transactions,
+    ],
+  } satisfies AccountSnapshot;
+
+  saveAccountSnapshot(updatedSnapshot);
+
+  return cloneAccountSnapshot(updatedSnapshot);
 }

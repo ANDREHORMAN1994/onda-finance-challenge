@@ -17,3 +17,8 @@ export type AccountSnapshot = {
   balance: number;
   transactions: AccountTransaction[];
 };
+
+export type TransferInput = {
+  amount: number;
+  recipient: string;
+};
