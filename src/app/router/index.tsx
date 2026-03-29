@@ -1,9 +1,9 @@
 import { Navigate, RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 import { ProtectedRoute } from '@/app/router/protected-route';
-import { LoginPage } from '@/features/auth';
-import { DashboardPage } from '@/features/dashboard';
-import { TransferPage } from '@/features/transfer';
+import { DashboardPage } from '@/pages/dashboard';
+import { LoginPage } from '@/pages/login';
+import { TransferPage } from '@/pages/transfer';
 import { AppShell } from '@/shared/layouts/app-shell';
 import { hasActiveSession } from '@/shared/lib/session';
 
