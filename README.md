@@ -6,6 +6,10 @@ Aplicação web de banco digital construída com React, TypeScript e Vite para s
 
 O projeto foi pensado para representar um recorte realista de um app bancário, mantendo a experiência simples e o código organizado. Mesmo sem backend real, a aplicação simula regras de negócio, persistência de sessão, atualização de saldo, histórico de transações e comportamento assíncrono com latência controlada.
 
+## Produção
+
+- URL: `https://onda-finance-challenge.vercel.app/`
+
 ## Funcionalidades
 
 - Login mock com validação de formulário e persistência de sessão
@@ -29,6 +33,15 @@ Exemplo:
 
 - E-mail: `andre@onda.finance`
 - Senha: `123456`
+
+## Fluxo principal
+
+O fluxo principal da aplicação foi organizado da seguinte forma:
+
+- `/` redireciona automaticamente para `/login` ou `/dashboard`, conforme a sessão
+- `/login` permite autenticação mock com persistência local
+- `/dashboard` exibe saldo, última transferência e movimentações recentes
+- `/transfer` envia uma nova transferência e atualiza o dashboard em seguida
 
 ## Stack utilizada
 
@@ -116,6 +129,12 @@ npm run build
 
 ```bash
 npm run preview
+```
+
+### Deploy em produção
+
+```txt
+https://onda-finance-challenge.vercel.app/
 ```
 
 ## Testes

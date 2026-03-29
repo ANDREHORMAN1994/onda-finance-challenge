@@ -55,18 +55,18 @@ export function AppShell() {
             ))}
           </nav>
 
-          <div className='flex items-center gap-3'>
-            <div className='text-right'>
+          <div className='flex w-full flex-wrap items-center justify-between gap-3 sm:w-auto sm:justify-end'>
+            <div className='min-w-0 flex-1 text-left sm:flex-none sm:text-right'>
               <p className='text-sm font-medium text-slate-900'>
                 {user?.name ?? defaultUserName}
               </p>
-              <p className='text-xs text-slate-500'>
+              <p className='max-w-56 truncate text-xs text-slate-500 sm:max-w-none'>
                 {user?.email ?? defaultUserEmail}
               </p>
             </div>
 
             <button
-              className='inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100'
+              className='inline-flex shrink-0 items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100'
               onClick={handleLogout}
               type='button'
             >
